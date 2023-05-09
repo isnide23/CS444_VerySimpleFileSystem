@@ -5,8 +5,8 @@
 
 int image_fd;
 
-int image_open(char *filename, int truncate){
-    if (truncate == DO_NOT_TRUNCATE) {
+int image_open(char *filename, int truncate) {
+    if (truncate == 1) {
         image_fd = open(filename, O_RDWR | O_CREAT, 0600);
     } else {
         image_fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, 0600);
@@ -14,7 +14,7 @@ int image_open(char *filename, int truncate){
     return image_fd;
 }
 
-int image_close(void){
+int image_close(void) {
     int return_value;
     return_value = close(image_fd);
     return return_value;
