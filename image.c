@@ -6,7 +6,7 @@
 int image_fd;
 
 int image_open(char *filename, int truncate) {
-    if (truncate == 1) {
+    if (!TRUNCATE) {
         image_fd = open(filename, O_RDWR | O_CREAT, 0600);
     } else {
         image_fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, 0600);
