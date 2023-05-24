@@ -20,9 +20,9 @@ simfs.a: block.o free.o image.o inode.o mkfs.o
 	ar rcs $@ $^
 
 simfs_test: simfs_test.c simfs.a
-    gcc -Wall -Wextra -o $@ $^
+	gcc -Wall -Wextra -o $@ $^
 
 .PHONY: test
 
 test: simfs_test
-    ./simfs_test
+	./simfs_test

@@ -11,6 +11,8 @@
 
 int main() {
 
+    CTEST_VERBOSE(1);
+
     image_open("test_file", 1);
     image_close();
 
