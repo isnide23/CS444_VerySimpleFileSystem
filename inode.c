@@ -5,9 +5,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-// call bread() to get the inode map, then find_free() to 
-// locate a free inode, then set_free() to mark it as non-free, 
-// then bwrite() to save the inode back out to disk.
+static struct inode incore[MAX_SYS_OPEN_FILES] = {0};
 
 int ialloc(void) {
     unsigned char inode_map[BLOCK_SIZE] = {0};
@@ -17,3 +15,22 @@ int ialloc(void) {
     bwrite(INODE_MAP_NUM, inode_map);
     return lowest_free;
 }
+
+struct inode *find_incore_free(void) {
+    return -1;
+}
+
+struct inode *find_incore(unsigned int inode_num) {
+    return -1;
+}
+
+struct inode *iget(int inode_num) {
+    return -1;
+}
+
+void iput(struct inode *in) {
+    return -1;
+}
+
+
+
