@@ -7,6 +7,8 @@
 #define MAX_SYS_OPEN_FILES 64
 #define INODES_PER_BLOCK (BLOCK_SIZE / INODE_SIZE)
 
+void alloc_all_incore(void);
+void free_all_incore(void);
 struct inode *ialloc(void);
 struct inode *find_incore_free(void);
 struct inode *find_incore(unsigned int inode_num);

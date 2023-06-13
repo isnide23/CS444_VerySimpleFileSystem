@@ -16,11 +16,14 @@ mkfs.o: mkfs.c
 simfs_test.o: simfs_test.c
 	gcc -Wall -Wextra -c $<
 
-simfs.a: block.o free.o image.o inode.o mkfs.o 
+pack.o: pack.c
+	gcc -Wall -Wextra -c $<
+
+simfs.a: block.o free.o image.o inode.o mkfs.o  pack.o
 	ar rcs $@ $^
 
 simfs_test: simfs_test.c simfs.a
-	gcc -Wall -Wextra -o $@ $^
+	gcc -Wall -Wextra -o $@ $^ -DCTEST_ENABLE
 
 .PHONY: test
 

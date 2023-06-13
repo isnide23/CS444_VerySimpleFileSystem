@@ -5,17 +5,27 @@
 #include "pack.h"
 #include <unistd.h>
 #include <stdio.h>
+#include <string.h>
 
 static struct inode incore[MAX_SYS_OPEN_FILES] = {0};
 
-// int ialloc(void) {
-//     unsigned char inode_map[BLOCK_SIZE] = {0};
-//     bread(INODE_MAP_NUM, inode_map);
-//     int lowest_free = find_free(inode_map);
-//     set_free(inode_map, lowest_free, SET_BIT);
-//     bwrite(INODE_MAP_NUM, inode_map);
-//     return lowest_free;
-// }
+void alloc_all_incore(void) {
+    int i;
+    for (i = 0; i < MAX_SYS_OPEN_FILES; i++) {
+        if (incore[i].ref_count == 0) {
+            incore[i].ref_count = 1;
+        } 
+    }
+}
+
+void free_all_incore(void) {
+    int i;
+    for (i = 0; i < MAX_SYS_OPEN_FILES; i++) {
+        if (incore[i].ref_count != 0) {
+            incore[i].ref_count = 0;
+        } 
+    }
+}
 
 struct inode* ialloc(void) {
     unsigned char inode_map[BLOCK_SIZE] = {0};
@@ -72,7 +82,7 @@ void read_inode(struct inode *in, int inode_num) {
     int block_num = inode_num / INODES_PER_BLOCK + INODE_FIRST_BLOCK;
     int inode_idx = inode_num % INODE_SIZE;
     int block_offset = inode_idx * INODE_SIZE;
-    int offset = block + block_offset;
+    unsigned char *offset = block + block_offset;
 
     bread(block_num, block);
     in->size = read_u32(offset);
@@ -88,11 +98,13 @@ void read_inode(struct inode *in, int inode_num) {
 
 void write_inode(struct inode *in) {
     // Calculate the block and offset within the block where the inode is stored
-    unsigned char block[BLOCK_SIZE] = {0};
-    int block_num = in->inode_num / (BLOCK_SIZE / INODE_SIZE);
+    unsigned char block[BLOCK_SIZE];
+    int block_num = in->inode_num / INODES_PER_BLOCK + INODE_FIRST_BLOCK;
     int inode_idx = in->inode_num % INODE_SIZE;
     int block_offset = inode_idx * INODE_SIZE;
-    int offset = block + block_offset;
+    unsigned char *offset = block + block_offset;
+    bread(block_num, block);
+    
 
     write_u32(offset, in->size);
     write_u16(offset + 4, in->owner_id); // replace inode offsets
@@ -105,8 +117,7 @@ void write_inode(struct inode *in) {
     }
 
     // Write the updated block back to disk
-    bwrite(block_num, in);
-
+    bwrite(block_num, block);
 }
 
 struct inode *iget(int inode_num) {
